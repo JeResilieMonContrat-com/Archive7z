@@ -69,6 +69,10 @@ class Archive7z
      * @var float|null
      */
     protected $timeout;
+    /**
+     * @var string|null
+     */
+    protected $solidMode;
 
     /**
      * @param string      $filename 7z archive filename
@@ -167,6 +171,18 @@ class Archive7z
         return $this;
     }
 
+    public function setSolidMode(?string $solidMode): self
+    {
+        $this->solidMode = $solidMode;
+
+        return $this;
+    }
+
+    public function getSolidMode(): ?string
+    {
+        return $this->solidMode;
+    }
+
     /**
      * @param string[] $arguments
      */
@@ -206,6 +222,10 @@ class Archive7z
             $out[] = '-p'.$this->password;
         } else {
             $out[] = '-p '; //todo
+        }
+
+        if ($this->solidMode) {
+            $out[] = '-ms' . $this->solidMode;
         }
 
         return $out;
