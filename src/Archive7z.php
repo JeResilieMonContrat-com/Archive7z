@@ -338,13 +338,22 @@ class Archive7z
             $args[] = '-spf';
             $args[] = $path;
         } else {
-            $realPath = \realpath($path);
-            if (false === $realPath) {
-                throw new Exception('Can not resolve absolute path for "'.$path.'"');
+            // If the path starts with an "@", it's a list of file
+            if (substr($path, 0, 1 ) === '@') {
+                $pathToCheck = \realpath(substr($path, 1, strlen($path)));
+                $realPath = '@' . $pathToCheck;
+            } else {
+                $pathToCheck = $realPath = \realpath($path);
+
+                if (\is_dir($realPath)) {
+                    $realPath .= '/*';
+                } else {
+                    $realPath = $path;
+                }
             }
 
-            if (\is_dir($realPath)) {
-                $realPath .= '/*';
+            if (false === $pathToCheck) {
+                throw new Exception('Can not resolve absolute path for "' . $pathToCheck . '"');
             }
 
             $args[] = $realPath;
